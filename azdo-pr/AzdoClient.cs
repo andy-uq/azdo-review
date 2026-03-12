@@ -143,18 +143,34 @@ public sealed class AzdoClient : IDisposable
         await EnsureSuccessOrThrowHelpful(response);
     }
 
-    private static async Task EnsureSuccessOrThrowHelpful(HttpResponseMessage response)
+    private async Task EnsureSuccessOrThrowHelpful(HttpResponseMessage response)
     {
         if (response.IsSuccessStatusCode) return;
         if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
             throw new InvalidOperationException(
-                "401 Unauthorized - AZDO_PAT may be expired or invalid. Generate a new PAT at https://dev.azure.com/{org}/_usersSettings/tokens");
+                $"401 Unauthorized - AZDO_PAT may be expired or invalid. Generate a new PAT at https://dev.azure.com/{_org}/_usersSettings/tokens");
         if (response.StatusCode == System.Net.HttpStatusCode.NonAuthoritativeInformation)
             throw new InvalidOperationException(
                 "203 Non-Authoritative - AZDO_PAT may be expired. Generate a new PAT.");
         var body = await response.Content.ReadAsStringAsync();
         throw new HttpRequestException(
             $"AzDO API returned {(int)response.StatusCode}: {body}");
+    }
+
+    public async Task<List<PrIteration>> GetIterationsAsync(int prId)
+    {
+        var url = $"{BaseUrl}/pullRequests/{prId}/iterations?api-version=7.1";
+        var json = await GetStringAsync(url);
+        var wrapper = JsonSerializer.Deserialize<ValueWrapper<PrIteration>>(json, JsonOptions);
+        return wrapper?.Value ?? [];
+    }
+
+    public async Task<List<IterationChange>> GetIterationChangesAsync(int prId, int iterationId, int compareTo = 0)
+    {
+        var url = $"{BaseUrl}/pullRequests/{prId}/iterations/{iterationId}/changes?api-version=7.1&compareTo={compareTo}&$top=1000";
+        var json = await GetStringAsync(url);
+        var result = JsonSerializer.Deserialize<IterationChanges>(json, JsonOptions);
+        return result?.ChangeEntries ?? [];
     }
 
     public void Dispose() => _http.Dispose();

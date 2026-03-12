@@ -7,5 +7,7 @@ rootCommand.AddCommand(ExportCommand.Create());
 rootCommand.AddCommand(ResolveCommand.Create());
 rootCommand.AddCommand(ReplyCommand.Create());
 rootCommand.AddCommand(CommentCommand.Create());
+rootCommand.AddCommand(StatusCommand.Create());
+rootCommand.AddCommand(DiffCommand.Create());
 
 return await rootCommand.InvokeAsync(args);

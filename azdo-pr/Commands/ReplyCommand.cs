@@ -24,6 +24,7 @@ public static class ReplyCommand
             var config = ConfigResolver.Resolve(org, project, repo);
             using var client = new AzdoClient(config.Pat, config.Org, config.Project, config.Repo);
 
+            message = ExpandTemplate(message);
             await client.PostReplyAsync(prId, threadId, message);
             Console.WriteLine($"Replied to thread {threadId} on PR #{prId}");
 
@@ -36,4 +37,12 @@ public static class ReplyCommand
 
         return cmd;
     }
+
+    private static string ExpandTemplate(string message) => message.ToLowerInvariant().Trim() switch
+    {
+        "done" => "👍",
+        "doh" => "🤦",
+        "deleted" => "✂️ Removed",
+        _ => message,
+    };
 }

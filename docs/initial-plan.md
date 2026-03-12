@@ -73,7 +73,7 @@ azdo-pr/
 # PR #1234 Review Comments
 <!-- pr_url: https://dev.azure.com/... -->
 <!-- generated: 2026-03-06 10:30 -->
-<!-- repo: Squirrel.Mortgages -->
+<!-- repo: MyProject.Api -->
 <!-- source_branch: feature/xyz -->
 
 ## Summary

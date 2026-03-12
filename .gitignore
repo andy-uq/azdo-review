@@ -455,6 +455,3 @@ NUL
 
 build/
 /package-lock.json
-
-# Azure Developer CLI generated Bicep modules
-hosting/Squirrel.Aspire/*.module.bicep
